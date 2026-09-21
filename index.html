@@ -205,7 +205,7 @@ S=R.map(r=>{const a=rt(r,'pre'),b=rt(r,'post');return{r,a,b,d:a!=null&&b!=null?b
 return{all,R,cur,p:M('pre'),q:M('post'),dist,dat,S}}
 const TA=w=>w?'border="1" cellpadding="6" style="border-collapse:collapse;width:100%;text-align:center"':'class="tb"';
 const atbl=(w,d)=>`<table ${TA(w)}><tr><th>Khía cạnh</th><th>TB trước</th><th>TB sau</th><th>Thay đổi</th><th>Đạt trước → sau</th></tr>`+A.map((a,i)=>`<tr><td>${a.e} ${a.n}</td><td>${f(d.p[i])}</td><td>${f(d.q[i])}</td><td>${d.p[i]!=null&&d.q[i]!=null?sg(d.q[i]-d.p[i]):'–'}</td><td>${pc(d.dat(d.dist('pre',i)))} → ${pc(d.dat(d.dist('post',i)))}</td></tr>`).join('')+'</table>';
-const stbl=(w,d)=>`<table ${TA(w)}><tr><th>Họ tên</th><th>Lớp</th><th>Trước</th><th>Sau</th><th>Thay đổi</th><th>Mức</th></tr>`+d.S.slice().sort((x,y)=>(y.d??-9)-(x.d??-9)).map(x=>`<tr><td>${esc(x.r.name)}</td><td>${esc(x.r.cls)}</td><td>${f(x.a)}</td><td>${f(x.b)}</td><td>${sg(x.d)}</td><td>${ln(x.b??x.a)}</td></tr>`).join('')+'</table>';
+const stbl=(w,d)=>`<table ${TA(w)}><tr><th>Họ tên</th><th>Lớp</th><th>Trước</th><th>Sau</th><th>Thay đổi</th><th>Mức</th>${w?'':'<th></th>'}</tr>`+d.S.slice().sort((x,y)=>(y.d??-9)-(x.d??-9)).map(x=>`<tr><td>${esc(x.r.name)}</td><td>${esc(x.r.cls)}</td><td>${f(x.a)}</td><td>${f(x.b)}</td><td>${sg(x.d)}</td><td>${ln(x.b??x.a)}</td>${w?'':`<td><button class="xhs" title="Xóa học sinh này" data-k="${encodeURIComponent(((x.r.name||'')+'|'+(x.r.cls||'')).trim().toLowerCase())}" onclick="xoaHS(decodeURIComponent(this.dataset.k))" style="border:0;background:#fee2e2;color:#b91c1c;border-radius:8px;padding:4px 8px;cursor:pointer">🗑️</button></td>`}</tr>`).join('')+'</table>';
 function cls(){const d=cd(),cs=[...new Set(d.all.map(r=>(r.cls||'').trim()))].sort();
 $('#cs').innerHTML='<option value="">Tất cả các lớp</option>'+cs.map(c=>`<option${c==d.cur?' selected':''}>${esc(c)}</option>`).join('');
 if(!d.R.length){$('#cr').innerHTML='<div class="card">Chưa có dữ liệu. Nạp mã của học sinh ở trên, hoặc cho học sinh làm khảo sát trên máy này 👥</div>';return}
@@ -238,6 +238,13 @@ const scfg=()=>{try{localStorage.tttcfg=JSON.stringify(CFG)}catch(e){}};
 const qs=new URLSearchParams(location.search).get('s');if(qs){CFG.url=qs;scfg()}
 const syn=t=>$('#sy').textContent=t,ss=t=>$('#ss').textContent=t;
 let PT;function push(){if(!CFG.url)return;clearTimeout(PT);syn('⏳ Đang gửi cho giáo viên…');PT=setTimeout(()=>{fetch(CFG.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({name:D.name,cls:D.cls,pre:D.pre,post:D.post})}).then(()=>syn('☁️ Đã gửi kết quả cho giáo viên'),()=>syn('⚠️ Chưa gửi được – kiểm tra mạng rồi chọn lại một đáp án'))},1200)}
+async function xoaHS(k){const d=db(),r=d[k];if(!r)return;const cl=CFG.url&&CFG.pass;
+if(!confirm(`Xóa học sinh "${r.name}" (${r.cls||'không rõ lớp'})?`+(cl?'\nDữ liệu trên Google Sheet cũng sẽ bị xóa.':'')))return;
+if(cl){try{const x=await fetch(CFG.url+(CFG.url.includes('?')?'&':'?')+'p='+encodeURIComponent(CFG.pass)+'&del='+encodeURIComponent(k)).then(z=>z.json());
+if(!x||x.ok!==true){toast(x&&x.error=='pass'?'⚠️ Sai mật khẩu':'⚠️ Cần cập nhật mã script rồi triển khai phiên bản mới');return}}catch(e){toast('⚠️ Không xóa được trên Sheet – kiểm tra mạng và link');return}}
+const d2=db();delete d2[k];try{localStorage.ttt=JSON.stringify(d2)}catch(e){}
+if(CFG.ck){CFG.ck=CFG.ck.filter(z=>z!=k);scfg()}
+toast('Đã xóa học sinh ✅');cls()}
 async function pull(){if(!CFG.url||!CFG.pass){ss('Nhập link Web app và mật khẩu để nhận kết quả tự động.');return}
 try{const r=await fetch(CFG.url+(CFG.url.includes('?')?'&':'?')+'p='+encodeURIComponent(CFG.pass)),a=await r.json();if(!Array.isArray(a)){ss('⚠️ Sai mật khẩu');return}imp(a);const nk=a.filter(o=>o&&o.name).map(o=>((o.name||'')+'|'+(o.cls||'')).trim().toLowerCase()),gone=(CFG.ck||[]).filter(k=>!nk.includes(k));if(gone.length){const d=db();gone.forEach(k=>delete d[k]);try{localStorage.ttt=JSON.stringify(d)}catch(x){}}CFG.ck=nk;scfg();ss(`🟢 ${a.length} học sinh · cập nhật lúc ${new Date().toLocaleTimeString('vi-VN')}`+(gone.length?` · đã xóa ${gone.length} em không còn trên Sheet`:''));if(!$('#t4').hidden)cls()}catch(e){ss('⚠️ Không đọc được. Kiểm tra link /exec và quyền “Bất kỳ ai”.')}}
 $('#su').value=CFG.url||'';$('#sp').value=CFG.pass||'';if(CFG.url)syn('☁️ Kết quả sẽ tự động gửi cho giáo viên');
@@ -260,6 +267,12 @@ function doGet(e){
  const J=x=>ContentService.createTextOutput(JSON.stringify(x)).setMimeType(ContentService.MimeType.JSON);
  if(e.parameter.p!=PASS)return J({error:'pass'});
  const s=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('data');
+ if(e.parameter.del){
+  if(s){const L=LockService.getScriptLock();L.waitLock(20000);
+   const v=s.getDataRange().getValues();
+   for(let i=v.length-1;i>=0;i--)if(v[i][0]==e.parameter.del)s.deleteRow(i+1);
+   L.releaseLock()}
+  return J({ok:true})}
  if(!s)return J([]);
  return J(s.getDataRange().getValues().filter(x=>x[0]).map(x=>({name:x[1],cls:x[2],pre:JSON.parse(x[3]),post:JSON.parse(x[4])})))}`;
 $('#gs').textContent=GS;$('#gc').onclick=()=>navigator.clipboard.writeText(GS).then(()=>ss('Đã chép mã script 📋'),()=>prompt('Sao chép mã:',GS));
