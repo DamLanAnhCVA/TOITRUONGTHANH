@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tôi trưởng thành – Khảo sát trước/sau</title>
+<style>
+:root{--i:#1e293b;--m:#64748b;--main:#0d9488}
+*{box-sizing:border-box;margin:0}
+body{font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--i);background:linear-gradient(160deg,#ccfbf1,#fef9c3 50%,#ffe4e6) fixed;padding-bottom:76px}
+.w{max-width:760px;margin:auto;padding:10px 12px}
+.hero{text-align:center;padding:16px 8px 4px}
+.hero h1{font-size:1.9rem;line-height:1.2;background:linear-gradient(90deg,#f43f5e,#f59e0b,#10b981,#6366f1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--m);font-size:.9rem;margin-top:4px}
+.card{background:#fff;border-radius:20px;padding:14px;margin:12px 0;box-shadow:0 6px 22px #0d94881f;border-top:6px solid var(--c,#0d9488)}
+.card h2{font-size:1.1rem;margin-bottom:8px;color:var(--c,#0d9488)}
+input,select,textarea{width:100%;padding:11px 12px;border:2px solid #e2e8f0;border-radius:12px;font:inherit;background:#fff;margin-bottom:8px}
+.kp{background:#f0fdfa;border-radius:14px;padding:10px;text-align:center;font-size:.8rem;color:var(--m)}.kp b{display:block;font-size:1.3rem;color:var(--main)}
+.tr.st{height:20px;display:flex}.tr.st i{border-radius:0;font-size:.72rem;color:#fff;text-align:center;line-height:20px;font-weight:700}
+.br small{display:block;margin-top:4px;color:var(--m)}
+label.sb{display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ov{overflow-x:auto}
+pre{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:10px;font-size:.72rem;overflow:auto;max-height:200px;margin:8px 0}
+summary{font-weight:700;cursor:pointer;margin:6px 0}
+details ol{padding-left:20px;font-size:.88rem}
+input:focus,select:focus{outline:0;border-color:var(--main)}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px}
+.pb{background:var(--main);color:#fff;padding:11px 14px;font-weight:700;width:100%;margin:6px 0}
+.sb{background:#f1f5f9;color:var(--i);padding:11px 14px;font-weight:600}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#f1f5f9;padding:4px;border-radius:14px}
+.seg button{padding:10px;background:0;font-weight:700;color:var(--m)}
+.seg .on{background:#fff;color:var(--main);box-shadow:0 2px 8px #0002}
+.tabs{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;box-shadow:0 -4px 16px #0002;z-index:9}
+.tabs button{padding:9px 2px;background:0;font-size:.78rem;color:var(--m);border-radius:0}
+.tabs .on{color:var(--main);font-weight:700;box-shadow:inset 0 4px var(--main)}
+.pgw{position:sticky;top:0;z-index:5;background:#f0fdfae6;padding:8px 4px;display:flex;gap:10px;align-items:center;border-radius:0 0 14px 14px}
+.bar{flex:1;height:12px;background:#e2e8f0;border-radius:9px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f43f5e,#f59e0b,#10b981);transition:width .3s}
+.pgw small{font-weight:700;color:var(--m);white-space:nowrap}
+.pgw .pb{width:auto;margin:0;padding:6px 10px;font-size:.85rem}
+.q{padding:9px 0;border-top:1px dashed #e2e8f0}
+.q p{margin-bottom:7px;font-size:.96rem}
+.lk{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.lk button{padding:11px 0;background:#f1f5f9;font-weight:800;color:var(--m)}
+.lk .on{background:var(--c);color:#fff;transform:scale(1.05)}
+.hint{font-size:.85rem;color:var(--m);margin:4px 0 8px}
+.lg{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.lg span{background:#fff;border-radius:20px;padding:4px 10px;font-size:.8rem;box-shadow:0 2px 6px #0001}
+.lv{display:flex;gap:10px;padding:8px;border-radius:12px;align-items:center;font-size:.92rem}
+.lv b{flex:0 0 84px;text-align:center;border-radius:10px;padding:4px;color:#fff;font-size:.85rem;line-height:1.2}
+.lv.me{background:#f0fdfa;outline:2px solid var(--c)}
+.lv.me::after{content:"⭐"}
+canvas{width:100%;max-width:420px;display:block;margin:auto}
+.br{margin:10px 0;font-size:.9rem}
+.tr{height:12px;background:#f1f5f9;border-radius:8px;margin-top:4px;overflow:hidden}
+.tr i{display:block;height:100%;border-radius:8px}
+.tb{width:100%;border-collapse:collapse;font-size:.88rem}
+.tb th,.tb td{padding:7px 5px;border-bottom:1px solid #e2e8f0;text-align:center}
+.tb th:first-child,.tb td:first-child{text-align:left}
+.ao{margin-top:8px;font-size:.93rem;background:#f8fafc;border-radius:12px;padding:0 12px}
+.ao:not(:empty){padding:12px}
+#st{font-size:.85rem;margin:6px 0}
+#ts{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) scale(0);background:#1e293bee;color:#fff;padding:10px 18px;border-radius:24px;z-index:20;transition:.2s;font-size:.9rem}
+#ts.on{transform:translateX(-50%) scale(1)}
+#rp{display:none}
+@media print{body{background:#fff;padding:0}body>*:not(#rp){display:none!important}#rp{display:block;padding:8mm}}
+</style></head><body>
+<div class="w">
+<header class="hero"><h1>🌟 Tôi trưởng thành</h1><p>Khảo sát tự đánh giá trước – sau chủ đề · Hoạt động trải nghiệm 12</p></header>
+<div class="card"><h2>👤 Thông tin học sinh</h2>
+<input id="nm" placeholder="Họ và tên" autocomplete="off"><input id="cl" placeholder="Lớp (VD: 12 Tin)" autocomplete="off">
+<div class="seg"><button data-p="pre" class="on">🌱 Trước khi học</button><button data-p="post">🌳 Sau khi học</button></div><p class="hint" id="sy" style="margin:8px 0 0"></p></div>
+
+<section class="tp" id="t0">
+<div class="pgw"><div class="bar"><i id="pg"></i></div><small id="pt"></small><button id="dn" class="pb" hidden onclick="tab(2)">Xem kết quả →</button></div>
+<p class="hint" style="margin-top:10px">Tự chấm mức độ đúng với em: <b>1</b> Chưa đúng · <b>2</b> Đôi khi · <b>3</b> Thường xuyên · <b>4</b> Rất đúng</p>
+<div id="sv"></div></section>
+<section class="tp" id="t1" hidden></section>
+<section class="tp" id="t2" hidden></section>
+<section class="tp" id="t3" hidden>
+<div class="card"><h2>✨ Gợi ý từ AI</h2>
+<p class="hint">Dán API key Gemini (AIza…), Claude (sk-ant…) hoặc OpenAI (sk-…). Key chỉ nằm trong trình duyệt này và gửi thẳng tới nhà cung cấp, không được lưu lại.</p>
+<input id="ky" type="password" placeholder="Dán API key" autocomplete="off">
+<button class="pb" id="bt">🔍 Kiểm tra key & tự chọn model</button>
+<div id="st"></div><select id="md" hidden></select>
+<button class="pb" id="ba">✨ Nhận gợi ý rèn luyện</button>
+<div class="ao" id="ao"></div></div>
+<div class="card"><h2>📤 Xuất & lưu kết quả</h2>
+<div class="g"><button class="pb" id="bp">📄 Xuất PDF</button><button class="pb" id="bw">📝 Xuất Word</button><button class="sb" id="bc">📋 Sao chép mã</button><button class="sb" id="bi">📥 Dán mã</button></div>
+<p class="hint">PDF: chọn “Lưu thành PDF” ở hộp thoại in (nếu trình duyệt trong app không in được, hãy mở bằng Chrome/Safari hoặc dùng Word). “Mã” giúp mang kết quả trước-học sang thiết bị khác để làm bài sau-học.</p></div>
+</section>
+</div>
+<div class="w tp" id="t4" hidden>
+<div class="card"><h2>☁️ Nhận kết quả tự động</h2>
+<p class="hint">Học sinh làm online → kết quả tự gửi vào Google Sheet của cô → trang này tự cập nhật mỗi 20 giây khi đang mở tab này.</p>
+<input id="su" placeholder="Link Web app Apps Script (…/exec)" autocomplete="off"><input id="sp" type="password" placeholder="Mật khẩu xem kết quả (đặt trong script)" autocomplete="off">
+<div class="g"><button class="pb" id="sk">🔄 Cập nhật ngay</button><button class="sb" id="sl">🔗 Chép link cho học sinh</button></div>
+<p class="hint" id="ss"></p>
+<details><summary>📖 Cài đặt 3 bước (làm một lần)</summary><ol>
+<li>Tạo Google Sheet mới → <b>Tiện ích mở rộng → Apps Script</b> → xóa mã cũ, dán mã dưới đây (đổi mật khẩu ở dòng đầu) → <b>Triển khai → Tùy chọn triển khai mới → Ứng dụng web</b>: Thực thi bằng “Tôi”, Quyền truy cập “Bất kỳ ai” → Triển khai, cấp quyền, chép link kết thúc bằng <b>/exec</b>. (Sửa mã sau này phải triển khai lại phiên bản mới.)</li>
+<li>Dán link /exec và mật khẩu vào hai ô ở trên.</li>
+<li>Đưa file HTML này lên mạng (ví dụ kéo thả vào Netlify Drop hoặc dùng GitHub Pages, đặt tên <b>index.html</b>), mở link online, bấm “Chép link cho học sinh” rồi gửi cho lớp.</li></ol>
+<button class="sb" id="gc" style="width:100%">📋 Chép mã script</button><pre id="gs"></pre></details></div>
+<div class="card"><h2>👥 Kết quả cả lớp</h2>
+<p class="hint">Thu mã của học sinh (tab “AI & Xuất” → Sao chép mã), dán vào đây, mỗi dòng một mã. Nếu học sinh làm trên chính máy này thì dữ liệu đã có sẵn.</p>
+<textarea id="cx" rows="3" placeholder="Dán nhiều mã, mỗi dòng một mã"></textarea>
+<div class="g"><button class="pb" id="cn">📥 Nạp mã</button><label class="sb">📂 Nạp file .json<input type="file" id="cf" accept=".json" hidden></label></div>
+<select id="cs" onchange="cls()"><option value="">Tất cả các lớp</option></select></div>
+<div id="cr"></div>
+<div class="card"><h2>✨ AI & xuất báo cáo lớp</h2><p class="hint">AI chỉ nhận số liệu tổng hợp, không nhận tên học sinh. Dùng API key đã kiểm tra ở tab “AI & Xuất”.</p>
+<button class="pb" id="ca">✨ AI phân tích cả lớp</button><div class="ao" id="cao"></div>
+<div class="g"><button class="pb" id="cp">📄 PDF lớp</button><button class="pb" id="cw">📝 Word lớp</button><button class="sb" id="cv2">📊 CSV (Excel)</button><button class="sb" id="cj">💾 Lưu file .json</button></div></div></div>
+<nav class="tabs"><button onclick="tab(0)">📝<br>Khảo sát</button><button onclick="tab(1)">📐<br>Rubric</button><button onclick="tab(2)">📊<br>Kết quả</button><button onclick="tab(3)">✨<br>AI & Xuất</button><button onclick="tab(4)">👥<br>Cả lớp</button></nav>
+<div id="ts"></div><div id="rp"></div>
+<script>
+const A=[
+{n:'Ý chí',s:'Ý chí',e:'💪',c:'#f43f5e',q:['Em xác định mục tiêu rõ ràng và quyết đoán hành động để đạt mục tiêu.','Em kiên trì tìm cách vượt qua khó khăn để hoàn thành nhiệm vụ.','Em kiên định từ chối những việc trái với mục đích của mình.','Em tự chủ, kiểm soát được hành vi và cảm xúc của bản thân.'],
+r:['Chưa xác định rõ mục tiêu; dễ bỏ cuộc khi gặp khó khăn.','Có mục tiêu nhưng còn mơ hồ; cần nhắc nhở mới duy trì được.','Mục tiêu rõ ràng; kiên trì vượt khó, biết tự kiểm soát hành vi, cảm xúc.','Mục tiêu rõ, quyết đoán; kiên định trước cám dỗ và truyền cảm hứng cho bạn bè.'],
+t:'Đặt mục tiêu theo tuần, chia nhỏ việc, ghi nhật kí những lần vượt khó và tự thưởng khi hoàn thành.'},
+{n:'Đam mê',s:'Đam mê',e:'🔥',c:'#f59e0b',q:['Em luôn nghĩ về điều mình yêu thích và thường xuyên nói về nó.','Em dành nhiều thời gian, công sức cho việc mình yêu thích.','Em hào hứng trao đổi, bàn luận về vấn đề mình quan tâm.','Em cố gắng, quyết tâm vượt rào cản để theo đuổi đam mê.'],
+r:['Chưa nhận ra điều mình thực sự yêu thích.','Có hứng thú thoáng qua; đầu tư thời gian chưa đều đặn.','Xác định được đam mê, dành thời gian đều đặn và hào hứng chia sẻ.','Theo đuổi bền bỉ, vượt rào cản, có sản phẩm cụ thể và kết nối bạn cùng chí hướng.'],
+t:'Dành ít nhất 30 phút mỗi ngày cho điều yêu thích, tham gia câu lạc bộ/nhóm cùng sở thích và lưu lại sản phẩm.'},
+{n:'Tư duy độc lập',s:'Tư duy',e:'🧠',c:'#6366f1',q:['Em có cách nhìn riêng, không lệ thuộc hoàn toàn vào ý kiến người khác.','Em biết lắng nghe những ý kiến hợp lí của người khác.','Em thu thập thông tin từ nhiều nguồn và tự kiểm chứng trước khi tin.','Em bình tĩnh phân tích trước khi đưa ra kết luận, quan điểm.'],
+r:['Thường làm theo số đông; ít thể hiện suy nghĩ riêng.','Có ý kiến riêng nhưng chưa kiểm chứng; dễ bị tác động.','Thu thập thông tin nhiều nguồn, tự đánh giá, biết lắng nghe và trình bày quan điểm.','Phân tích sâu, bảo vệ quan điểm bằng lập luận; sẵn sàng điều chỉnh khi có bằng chứng.'],
+t:'Kiểm chứng thông tin từ ít nhất 3 nguồn trước khi kết luận; tập nêu quan điểm kèm lí do và ví dụ.'},
+{n:'Thích ứng',s:'Thích ứng',e:'🌱',c:'#10b981',q:['Em nhận ra những điểm mới, khác biệt khi môi trường thay đổi.','Em bình tĩnh chấp nhận và suy nghĩ tích cực trước sự thay đổi.','Em sẵn sàng học hỏi, thay đổi thói quen cũ để phù hợp hoàn cảnh.','Em chủ động kết nối và đánh giá lại sự điều chỉnh của mình.'],
+r:['Lúng túng, khó chấp nhận khi có thay đổi.','Chấp nhận thay đổi nhưng còn thụ động, cần người khác hỗ trợ.','Nhận biết thay đổi, chủ động học hỏi và điều chỉnh hành vi.','Dự đoán trước, linh hoạt điều chỉnh, tự đánh giá hiệu quả và giúp bạn cùng thích ứng.'],
+t:'Liệt kê thay đổi sắp tới, mỗi tuần chọn 1 việc ưu tiên điều chỉnh và tự đánh giá vào cuối tuần.'}];
+const L=['Bắt đầu','Đang hình thành','Đạt','Nổi bật'],LC=['#fb7185','#fbbf24','#34d399','#38bdf8'];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const md=s=>esc(s).replace(/^#+ ?/gm,'').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^[-*] /gm,'• ').replace(/\n/g,'<br>');
+let ph='pre',D={name:'',cls:'',pre:Array(16).fill(0),post:Array(16).fill(0),ai:''},AI={};
+const avg=(p,i)=>{const v=D[p].slice(i*4,i*4+4).filter(Boolean);return v.length?v.reduce((a,b)=>a+b)/v.length:null};
+const P=()=>[A.map((_,i)=>avg('pre',i)),A.map((_,i)=>avg('post',i))];
+const tot=a=>{const v=a.filter(x=>x!=null);return v.length?v.reduce((x,y)=>x+y)/v.length:null};
+const lv=m=>m==null?-1:m<1.75?0:m<2.5?1:m<3.25?2:3;
+const f=m=>m==null?'–':m.toFixed(2).replace('.',',');
+const sg=d=>d==null?'–':(d>0?'+':'')+f(d);
+const ln=m=>lv(m)<0?'–':`Mức ${lv(m)+1} · ${L[lv(m)]}`;
+const K=()=>(D.name+'|'+D.cls).trim().toLowerCase();
+const db=()=>{try{return JSON.parse(localStorage.ttt||'{}')}catch(e){return{}}};
+function save(){if(!D.name.trim())return;try{const d=db();d[K()]=D;localStorage.ttt=JSON.stringify(d)}catch(e){}push()}
+function load(){const r=db()[K()];if(r){D.pre=r.pre;D.post=r.post;D.ai=r.ai||'';toast('Đã tải kết quả đã lưu của em ✅')}}
+function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2300)}
+function prog(){const n=D[ph].filter(Boolean).length;$('#pg').style.width=n/16*100+'%';$('#pt').textContent=n+'/16 câu';$('#dn').hidden=n<16}
+function survey(){$('#sv').innerHTML=A.map((a,i)=>`<div class="card" style="--c:${a.c}"><h2>${a.e} ${a.n}</h2>${a.q.map((q,j)=>{const k=i*4+j;return `<div class="q"><p>${j+1}. ${q}</p><div class="lk">${[1,2,3,4].map(v=>`<button data-k="${k}" data-v="${v}" class="${D[ph][k]==v?'on':''}">${v}</button>`).join('')}</div></div>`}).join('')}</div>`).join('');prog()}
+$('#sv').onclick=e=>{const b=e.target.closest('[data-k]');if(!b)return;if(!D.name.trim()||!D.cls.trim()){toast('Nhập họ tên và lớp trước nhé 😊');$('#nm').focus();scrollTo(0,0);return}
+D[ph][b.dataset.k]=+b.dataset.v;save();b.parentNode.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x==b));prog()};
+$$('.seg button').forEach(b=>b.onclick=()=>{ph=b.dataset.p;$$('.seg button').forEach(x=>x.classList.toggle('on',x==b));survey()});
+$('#nm').oninput=$('#cl').oninput=()=>{D.name=$('#nm').value;D.cls=$('#cl').value};
+$('#nm').onchange=$('#cl').onchange=()=>{load();survey();showAI()};
+function showAI(){$('#ao').innerHTML=D.ai?md(D.ai):''}
+function tab(n){$$('.tp').forEach((e,i)=>e.hidden=i!=n);$$('.tabs button').forEach((b,i)=>b.classList.toggle('on',i==n));if(n==1)rub();if(n==2)res();if(n==4){cls();pull()}scrollTo(0,0)}
+function rub(){const [p,q]=P(),l=q.some(x=>x!=null)?q:p;
+$('#t1').innerHTML=`<div class="card"><h2>📐 Rubric 4 mức</h2><p class="hint">Điểm trung bình mỗi mặt (thang 1–4): Mức 1 &lt; 1,75 · Mức 2: 1,75–2,49 · Mức 3: 2,5–3,24 · Mức 4 ≥ 3,25. Mức 3–4 tương ứng “Đạt”, Mức 1–2 tương ứng “Chưa đạt” ở phần đánh giá cuối chủ đề. Dấu ⭐ là mức hiện tại của em.</p></div>`+A.map((a,i)=>`<div class="card" style="--c:${a.c}"><h2>${a.e} ${a.n}</h2>${a.r.map((t,k)=>`<div class="lv${lv(l[i])==k?' me':''}"><b style="background:${LC[k]}">Mức ${k+1}<br><small>${L[k]}</small></b><span>${t}</span></div>`).join('')}</div>`).join('')}
+function tbl(w){const [p,q]=P();return `<table ${w?'border="1" cellpadding="6" style="border-collapse:collapse;width:100%;text-align:center"':'class="tb"'}><tr><th>Khía cạnh</th><th>Trước</th><th>Sau</th><th>Thay đổi</th><th>Mức hiện tại</th></tr>`+A.map((a,i)=>`<tr><td>${a.e} ${a.n}</td><td>${f(p[i])}</td><td>${f(q[i])}</td><td>${p[i]!=null&&q[i]!=null?sg(q[i]-p[i]):'–'}</td><td>${ln(q[i]??p[i])}</td></tr>`).join('')+(t=>`<tr><td><b>Tổng</b></td><td><b>${f(tot(p))}</b></td><td><b>${f(tot(q))}</b></td><td>${tot(p)!=null&&tot(q)!=null?sg(tot(q)-tot(p)):'–'}</td><td>${ln(tot(q)??tot(p))}</td></tr>`)()+'</table>'}
+function tips(){const [p,q]=P(),l=q.some(x=>x!=null)?q:p;return '<ul>'+A.map((a,i)=>[l[i],a]).filter(x=>x[0]!=null).sort((x,y)=>x[0]-y[0]).slice(0,2).map(x=>`<li><b>${x[1].n}:</b> ${x[1].t}</li>`).join('')+'</ul>'}
+function radar(cv,p,q){const W=800,c=W/2,R=W*.3,x=cv.getContext('2d');x.clearRect(0,0,W,W);x.fillStyle='#fff';x.fillRect(0,0,W,W);x.font='bold 34px system-ui,sans-serif';x.textAlign='center';
+const pt=(i,v)=>[c+R*v/4*Math.sin(i*Math.PI/2),c-R*v/4*Math.cos(i*Math.PI/2)];
+for(let r=1;r<=4;r++){x.beginPath();for(let i=0;i<4;i++){const[a,b]=pt(i,r);i?x.lineTo(a,b):x.moveTo(a,b)}x.closePath();x.strokeStyle='#cbd5e1';x.lineWidth=2;x.stroke();x.fillStyle='#94a3b8';x.font='24px system-ui';x.fillText(r,c+8,c-R*r/4+22)}
+x.font='bold 34px system-ui,sans-serif';A.forEach((a,i)=>{const[u,v]=pt(i,4.5);x.fillStyle=a.c;x.fillText(a.e+' '+a.s,u,v+(i==0?-4:i==2?26:10))});
+[[p,'#6366f1',0],[q,'#0d9488',1]].forEach(([d,col,fl])=>{if(d.every(v=>v==null))return;x.beginPath();d.forEach((v,i)=>{const[a,b]=pt(i,v||0);i?x.lineTo(a,b):x.moveTo(a,b)});x.closePath();x.fillStyle=col+(fl?'55':'22');x.fill();x.strokeStyle=col;x.lineWidth=5;x.setLineDash(fl?[]:[16,10]);x.stroke();x.setLineDash([]);d.forEach((v,i)=>{const[a,b]=pt(i,v||0);x.beginPath();x.arc(a,b,9,0,7);x.fillStyle=col;x.fill()})})}
+function res(){const [p,q]=P();if(!p.concat(q).some(x=>x!=null)){$('#t2').innerHTML='<div class="card">Hoàn thành khảo sát để xem biểu đồ phân tích 📊</div>';return}
+const d=A.map((a,i)=>p[i]!=null&&q[i]!=null?[q[i]-p[i],a.n]:null).filter(Boolean).sort((x,y)=>y[0]-x[0]);
+$('#t2').innerHTML=`<div class="card"><h2>🕸️ Radar 4 mặt trưởng thành</h2><canvas id="cv" width="800" height="800"></canvas><div class="lg"><span style="color:#6366f1">◌ Trước khi học</span><span style="color:#0d9488">● Sau khi học</span></div></div>
+<div class="card"><h2>📈 So sánh từng mặt</h2>${A.map((a,i)=>`<div class="br"><b>${a.e} ${a.n}</b><div class="tr"><i style="width:${(p[i]||0)*25}%;background:#a5b4fc"></i></div><div class="tr"><i style="width:${(q[i]||0)*25}%;background:${a.c}"></i></div></div>`).join('')}<p class="hint">Thanh nhạt: trước · thanh đậm: sau</p></div>
+<div class="card"><h2>🧾 Bảng điểm & mức đạt</h2>${tbl(0)}${d.length?`<p style="margin-top:10px">🏆 Tiến bộ nhiều nhất: <b>${d[0][1]}</b> (${sg(d[0][0])}).${d[d.length-1][0]<=0?` Cần chú ý: <b>${d[d.length-1][1]}</b> (${sg(d[d.length-1][0])}).`:''}</p>`:'<p class="hint">Hoàn thành cả “Trước” và “Sau” để thấy sự tiến bộ.</p>'}</div>
+<div class="card"><h2>💡 Gợi ý nhanh (không cần AI)</h2>${tips()}</div>`;radar($('#cv'),p,q)}
+function rep(w){const [p,q]=P(),c=document.createElement('canvas');c.width=c.height=800;radar(c,p,q);
+return `<h2 style="color:#0d9488">Phiếu khảo sát tự đánh giá – Chủ đề 2: Tôi trưởng thành</h2><p><b>Học sinh:</b> ${esc(D.name)} &nbsp; <b>Lớp:</b> ${esc(D.cls)} &nbsp; <b>Ngày:</b> ${new Date().toLocaleDateString('vi-VN')}</p>${tbl(1)}${w?'':`<p style="text-align:center"><img src="${c.toDataURL()}" width="360"></p>`}<h3>Gợi ý rèn luyện</h3>${D.ai?md(D.ai):tips()}<p style="font-size:11px;color:#64748b">Thang điểm 1–4: Mức 1 &lt; 1,75 · Mức 2 &lt; 2,5 · Mức 3 &lt; 3,25 · Mức 4 ≥ 3,25. Mức 3–4: Đạt.</p>`}
+const ok=()=>{if(P().flat().some(x=>x!=null))return 1;toast('Chưa có dữ liệu khảo sát');return 0};
+$('#bp').onclick=()=>{if(!ok())return;$('#rp').innerHTML=rep(0);setTimeout(()=>print(),200)};
+$('#bw').onclick=()=>{if(!ok())return;const h=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Khảo sát</title></head><body style="font-family:Calibri">${rep(1)}</body></html>`,a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+h],{type:'application/msword'}));a.download='Toi_truong_thanh_'+(D.name||'HS').trim().replace(/\s+/g,'_')+'.doc';a.click()};
+$('#bc').onclick=()=>{const c=btoa(unescape(encodeURIComponent(JSON.stringify(D))));navigator.clipboard.writeText(c).then(()=>toast('Đã sao chép mã 📋'),()=>prompt('Sao chép mã:',c))};
+$('#bi').onclick=()=>{const c=prompt('Dán mã dữ liệu:');if(!c)return;try{Object.assign(D,JSON.parse(decodeURIComponent(escape(atob(c.trim())))));$('#nm').value=D.name;$('#cl').value=D.cls;save();survey();showAI();toast('Đã nạp dữ liệu ✅')}catch(e){toast('Mã không hợp lệ')}};
+const MD={gemini:['gemini-2.5-flash','gemini-2.0-flash','gemini-2.5-flash-lite','gemini-1.5-flash'],claude:['claude-haiku-4-5-20251001','claude-sonnet-5'],openai:['gpt-4o-mini','gpt-4.1-mini','gpt-4o']};
+const prov=k=>k.startsWith('sk-ant')?'claude':k.startsWith('AIza')?'gemini':k.startsWith('sk-')?'openai':'';
+async function ask(pv,k,m,t,n){let r,j,H={'content-type':'application/json'};
+if(pv=='gemini')r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${k}`,{method:'POST',headers:H,body:JSON.stringify({contents:[{parts:[{text:t}]}],generationConfig:{maxOutputTokens:n}})});
+else if(pv=='claude')r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{...H,'x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:m,max_tokens:n,messages:[{role:'user',content:t}]})});
+else r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{...H,Authorization:'Bearer '+k},body:JSON.stringify({model:m,max_completion_tokens:n,messages:[{role:'user',content:t}]})});
+j=await r.json();if(!r.ok)throw Error(j.error?.message||r.status);
+return pv=='gemini'?(j.candidates?.[0]?.content?.parts||[]).map(x=>x.text).join(''):pv=='claude'?j.content.map(x=>x.text||'').join(''):j.choices[0].message.content}
+$('#bt').onclick=async()=>{const k=$('#ky').value.trim(),pv=prov(k);if(!pv){$('#st').textContent='⚠️ Không nhận ra key. Key hợp lệ bắt đầu bằng AIza, sk-ant hoặc sk-.';return}
+$('#st').textContent='⏳ Đang thử '+MD[pv].length+' model…';
+const rs=await Promise.all(MD[pv].map(m=>ask(pv,k,m,'Trả lời: OK',20).then(()=>[m,1],e=>[m,0,e.message])));
+$('#st').innerHTML=rs.map(r=>r[1]?`✅ ${r[0]}`:`❌ ${r[0]} <small>${esc(r[2]).slice(0,80)}</small>`).join('<br>');
+const g=rs.filter(r=>r[1]).map(r=>r[0]),s=$('#md');s.innerHTML=g.map(m=>`<option>${m}</option>`).join('');s.hidden=!g.length;AI={k,pv};if(g.length)toast('Đã chọn model: '+g[0])};
+$('#ba').onclick=async()=>{if(!ok())return;if(!AI.k||$('#md').hidden){toast('Hãy kiểm tra key trước');return}
+const [p,q]=P(),l=q.some(x=>x!=null)?'post':'pre',low=A.flatMap((a,i)=>a.q.filter((_,j)=>D[l][i*4+j]&&D[l][i*4+j]<=2));
+const t=`Bạn là cố vấn học đường THPT, giọng thân thiện. Học sinh ${D.name} (lớp ${D.cls}) tự đánh giá chủ đề "Tôi trưởng thành" (HĐTN 12) trên thang 1–4 (Mức 1 <1,75; Mức 2 <2,5; Mức 3 <3,25; Mức 4 ≥3,25):\n${A.map((a,i)=>`- ${a.n}: trước=${f(p[i])}, sau=${f(q[i])}`).join('\n')}\nCác câu tự chấm thấp (≤2): ${low.length?low.join(' | '):'không có'}\nViết tiếng Việt, dưới 300 từ, không dùng bảng, gồm: 1) nhận xét ngắn về tiến bộ; 2) hai điểm mạnh; 3) hai khía cạnh cần rèn luyện, mỗi khía cạnh 3 hành động cụ thể, đo được trong 4 tuần; 4) một câu động viên.`;
+$('#ao').textContent='⏳ AI đang viết gợi ý…';
+try{D.ai=await ask(AI.pv,AI.k,$('#md').value,t,3000);save();showAI()}catch(e){$('#ao').textContent='❌ Lỗi: '+e.message}};
+const ra=(r,ph,i)=>{const v=(r[ph]||[]).slice(i*4,i*4+4).filter(Boolean);return v.length?v.reduce((a,b)=>a+b)/v.length:null};
+const rt=(r,ph)=>tot(A.map((_,i)=>ra(r,ph,i)));
+const pc=v=>v==null?'–':v+'%';
+const dl=(t,n,m)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m}));a.download=n;a.click()};
+let CAI='';
+function imp(a){const d=db(),m=(x,y)=>(y||[]).map((v,i)=>v||(x||[])[i]||0);let n=0;a.forEach(o=>{if(!o||!o.name||!Array.isArray(o.pre)||!Array.isArray(o.post))return;const k=((o.name||'')+'|'+(o.cls||'')).trim().toLowerCase(),e=d[k]||{};d[k]={name:o.name,cls:o.cls||'',pre:m(e.pre,o.pre),post:m(e.post,o.post),ai:o.ai||e.ai||''};n++});try{localStorage.ttt=JSON.stringify(d)}catch(x){}return n}
+function cd(){const cur=$('#cs').value,all=Object.values(db()).filter(r=>r&&r.pre&&r.post&&(r.pre.some(Boolean)||r.post.some(Boolean))),R=all.filter(r=>!cur||(r.cls||'').trim()==cur),
+M=ph=>A.map((_,i)=>tot(R.map(r=>ra(r,ph,i)))),
+dist=(ph,i)=>{const c=[0,0,0,0];R.forEach(r=>{const l=lv(ra(r,ph,i));if(l>=0)c[l]++});return c},
+dat=c=>{const n=c[0]+c[1]+c[2]+c[3];return n?Math.round((c[2]+c[3])/n*100):null},
+S=R.map(r=>{const a=rt(r,'pre'),b=rt(r,'post');return{r,a,b,d:a!=null&&b!=null?b-a:null}});
+return{all,R,cur,p:M('pre'),q:M('post'),dist,dat,S}}
+const TA=w=>w?'border="1" cellpadding="6" style="border-collapse:collapse;width:100%;text-align:center"':'class="tb"';
+const atbl=(w,d)=>`<table ${TA(w)}><tr><th>Khía cạnh</th><th>TB trước</th><th>TB sau</th><th>Thay đổi</th><th>Đạt trước → sau</th></tr>`+A.map((a,i)=>`<tr><td>${a.e} ${a.n}</td><td>${f(d.p[i])}</td><td>${f(d.q[i])}</td><td>${d.p[i]!=null&&d.q[i]!=null?sg(d.q[i]-d.p[i]):'–'}</td><td>${pc(d.dat(d.dist('pre',i)))} → ${pc(d.dat(d.dist('post',i)))}</td></tr>`).join('')+'</table>';
+const stbl=(w,d)=>`<table ${TA(w)}><tr><th>Họ tên</th><th>Lớp</th><th>Trước</th><th>Sau</th><th>Thay đổi</th><th>Mức</th></tr>`+d.S.slice().sort((x,y)=>(y.d??-9)-(x.d??-9)).map(x=>`<tr><td>${esc(x.r.name)}</td><td>${esc(x.r.cls)}</td><td>${f(x.a)}</td><td>${f(x.b)}</td><td>${sg(x.d)}</td><td>${ln(x.b??x.a)}</td></tr>`).join('')+'</table>';
+function cls(){const d=cd(),cs=[...new Set(d.all.map(r=>(r.cls||'').trim()))].sort();
+$('#cs').innerHTML='<option value="">Tất cả các lớp</option>'+cs.map(c=>`<option${c==d.cur?' selected':''}>${esc(c)}</option>`).join('');
+if(!d.R.length){$('#cr').innerHTML='<div class="card">Chưa có dữ liệu. Nạp mã của học sinh ở trên, hoặc cho học sinh làm khảo sát trên máy này 👥</div>';return}
+const {p,q,S,R}=d,pd=S.filter(x=>x.d!=null),up=pd.filter(x=>x.d>.05).length,dn=pd.filter(x=>x.d<-.05).length,
+da=ph=>{const v=S.map(x=>lv(ph=='pre'?x.a:x.b)).filter(l=>l>=0);return v.length?Math.round(v.filter(l=>l>=2).length/v.length*100):null},
+g=A.map((a,i)=>p[i]!=null&&q[i]!=null?[q[i]-p[i],a.n]:null).filter(Boolean).sort((x,y)=>y[0]-x[0]),
+st=c=>{const n=c[0]+c[1]+c[2]+c[3]||1;return `<div class="tr st">${c.map((v,k)=>`<i style="width:${v/n*100}%;background:${LC[k]}">${v/n>.1?v:''}</i>`).join('')}</div>`};
+$('#cr').innerHTML=`<div class="card"><h2>🎯 Tổng quan ${esc(d.cur||'các lớp')}</h2><div class="g"><div class="kp"><b>${R.length}</b>học sinh (${pd.length} có đủ trước–sau)</div><div class="kp"><b>${f(tot(p))} → ${f(tot(q))}</b>điểm TB trước → sau</div><div class="kp"><b>${pc(da('pre'))} → ${pc(da('post'))}</b>tỉ lệ Đạt (Mức 3–4)</div><div class="kp"><b>▲${up} ▬${pd.length-up-dn} ▼${dn}</b>tăng · giữ · giảm</div></div></div>
+<div class="card"><h2>🕸️ Radar trung bình cả lớp</h2><canvas id="cc" width="800" height="800"></canvas><div class="lg"><span style="color:#6366f1">◌ Trước</span><span style="color:#0d9488">● Sau</span></div></div>
+<div class="card"><h2>📊 Phân bố học sinh theo mức</h2><div class="lg">${L.map((l,k)=>`<span style="border-left:10px solid ${LC[k]}">Mức ${k+1} · ${l}</span>`).join('')}</div>${A.map((a,i)=>`<div class="br"><b>${a.e} ${a.n}</b> <span style="color:#64748b;font-size:.8rem">Đạt: ${pc(d.dat(d.dist('pre',i)))} → ${pc(d.dat(d.dist('post',i)))}</span><small>Trước</small>${st(d.dist('pre',i))}<small>Sau</small>${st(d.dist('post',i))}</div>`).join('')}<p class="hint">Số trong thanh = số học sinh ở mức đó.</p></div>
+<div class="card"><h2>📈 Điểm TB từng khía cạnh</h2>${A.map((a,i)=>`<div class="br"><b>${a.e} ${a.n}</b> <span style="color:#64748b;font-size:.8rem">${f(p[i])} → ${f(q[i])}</span><div class="tr"><i style="width:${(p[i]||0)*25}%;background:#a5b4fc"></i></div><div class="tr"><i style="width:${(q[i]||0)*25}%;background:${a.c}"></i></div></div>`).join('')}<div class="ov" style="margin-top:12px">${atbl(0,d)}</div>${g.length?`<p style="margin-top:10px">🏆 Tiến bộ nhất: <b>${g[0][1]}</b> (${sg(g[0][0])}) · 🔎 Cần củng cố: <b>${g[g.length-1][1]}</b> (${sg(g[g.length-1][0])})</p>`:''}</div>
+<div class="card"><h2>👩‍🎓 Danh sách học sinh</h2><div class="ov">${stbl(0,d)}</div></div>`;
+radar($('#cc'),p,q)}
+function crep(w){const d=cd(),c=document.createElement('canvas');c.width=c.height=800;radar(c,d.p,d.q);
+return `<h2 style="color:#0d9488">Báo cáo khảo sát cả lớp – Chủ đề 2: Tôi trưởng thành</h2><p><b>Lớp:</b> ${esc(d.cur||'Tất cả')} &nbsp; <b>Số học sinh:</b> ${d.R.length} &nbsp; <b>Ngày:</b> ${new Date().toLocaleDateString('vi-VN')}</p>${atbl(1,d)}${w?'':`<p style="text-align:center"><img src="${c.toDataURL()}" width="360"></p>`}${CAI?`<h3>Phân tích & gợi ý</h3>${md(CAI)}`:''}<h3>Danh sách học sinh</h3>${stbl(1,d)}`}
+const cok=()=>{if(cd().R.length)return 1;toast('Chưa có dữ liệu lớp');return 0};
+$('#cn').onclick=()=>{const a=[];$('#cx').value.split(/\s+/).filter(Boolean).forEach(c=>{try{a.push(JSON.parse(decodeURIComponent(escape(atob(c)))))}catch(e){}});const n=imp(a);$('#cx').value='';toast(n?`Đã nạp ${n} học sinh ✅`:'Không đọc được mã nào');cls()};
+$('#cf').onchange=e=>{const fl=e.target.files[0];if(!fl)return;fl.text().then(t=>{try{const a=JSON.parse(t);toast(`Đã nạp ${imp(Array.isArray(a)?a:[a])} học sinh ✅`);cls()}catch(x){toast('File không hợp lệ')}});e.target.value=''};
+$('#cj').onclick=()=>{if(cok())dl(JSON.stringify(cd().R),'Ket_qua_ca_lop.json','application/json')};
+$('#cp').onclick=()=>{if(!cok())return;$('#rp').innerHTML=crep(0);setTimeout(()=>print(),200)};
+$('#cw').onclick=()=>{if(cok())dl('\ufeff<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Báo cáo lớp</title></head><body style="font-family:Calibri">'+crep(1)+'</body></html>','Bao_cao_ca_lop.doc','application/msword')};
+$('#cv2').onclick=()=>{if(!cok())return;const d=cd(),T=['Trước','Sau'],h=['Họ tên','Lớp',...T.flatMap(t=>A.map(a=>t+' – '+a.n)),'TB trước','TB sau','Thay đổi','Mức',...T.flatMap(t=>Array.from({length:16},(_,i)=>t+' C'+(i+1)))],
+rows=d.S.map(x=>[x.r.name,x.r.cls,...['pre','post'].flatMap(ph=>A.map((_,i)=>f(ra(x.r,ph,i)))),f(x.a),f(x.b),sg(x.d),ln(x.b??x.a),...x.r.pre.map(v=>v||''),...x.r.post.map(v=>v||'')]);
+dl('\ufeffsep=;\n'+[h,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n'),'Ket_qua_ca_lop.csv','text/csv')};
+$('#ca').onclick=async()=>{if(!cok())return;if(!AI.k||$('#md').hidden){toast('Kiểm tra API key ở tab “AI & Xuất” trước');return}
+const d=cd(),t=`Bạn là chuyên gia giáo dục, hỗ trợ giáo viên chủ nhiệm THPT. Số liệu tổng hợp khảo sát tự đánh giá chủ đề "Tôi trưởng thành" (HĐTN 12), lớp ${d.cur||'nhiều lớp'}, ${d.R.length} học sinh, thang 1–4 (Mức 3–4 = Đạt):\n${A.map((a,i)=>`- ${a.n}: TB trước ${f(d.p[i])}, sau ${f(d.q[i])}; tỉ lệ Đạt trước ${pc(d.dat(d.dist('pre',i)))}, sau ${pc(d.dat(d.dist('post',i)))}`).join('\n')}\nViết tiếng Việt, dưới 350 từ, không dùng bảng, không nêu tên học sinh, gồm: 1) nhận xét chung về hiệu quả chủ đề; 2) hai mặt tiến bộ rõ nhất và hai mặt cần củng cố; 3) ba hoạt động sinh hoạt lớp/HĐTN cụ thể cho tháng tới; 4) cách hỗ trợ nhóm học sinh chưa đạt.`;
+$('#cao').textContent='⏳ AI đang phân tích…';try{CAI=await ask(AI.pv,AI.k,$('#md').value,t,3500);$('#cao').innerHTML=md(CAI)}catch(e){$('#cao').textContent='❌ Lỗi: '+e.message}};
+let CFG={};try{CFG=JSON.parse(localStorage.tttcfg||'{}')}catch(e){}
+const scfg=()=>{try{localStorage.tttcfg=JSON.stringify(CFG)}catch(e){}};
+const qs=new URLSearchParams(location.search).get('s');if(qs){CFG.url=qs;scfg()}
+const syn=t=>$('#sy').textContent=t,ss=t=>$('#ss').textContent=t;
+let PT;function push(){if(!CFG.url)return;clearTimeout(PT);syn('⏳ Đang gửi cho giáo viên…');PT=setTimeout(()=>{fetch(CFG.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({name:D.name,cls:D.cls,pre:D.pre,post:D.post})}).then(()=>syn('☁️ Đã gửi kết quả cho giáo viên'),()=>syn('⚠️ Chưa gửi được – kiểm tra mạng rồi chọn lại một đáp án'))},1200)}
+async function pull(){if(!CFG.url||!CFG.pass){ss('Nhập link Web app và mật khẩu để nhận kết quả tự động.');return}
+try{const r=await fetch(CFG.url+(CFG.url.includes('?')?'&':'?')+'p='+encodeURIComponent(CFG.pass)),a=await r.json();if(!Array.isArray(a)){ss('⚠️ Sai mật khẩu');return}imp(a);ss(`🟢 ${a.length} học sinh · cập nhật lúc ${new Date().toLocaleTimeString('vi-VN')}`);if(!$('#t4').hidden)cls()}catch(e){ss('⚠️ Không đọc được. Kiểm tra link /exec và quyền “Bất kỳ ai”.')}}
+$('#su').value=CFG.url||'';$('#sp').value=CFG.pass||'';if(CFG.url)syn('☁️ Kết quả sẽ tự động gửi cho giáo viên');
+$('#su').onchange=$('#sp').onchange=()=>{CFG.url=$('#su').value.trim();CFG.pass=$('#sp').value;scfg();pull()};
+$('#sk').onclick=pull;
+$('#sl').onclick=()=>{if(!CFG.url){ss('Nhập link Web app trước.');return}if(location.protocol=='file:'){ss('Hãy đưa file lên mạng (bước 3), mở link online rồi bấm lại nút này.');return}const l=location.href.split(/[?#]/)[0]+'?s='+encodeURIComponent(CFG.url);navigator.clipboard.writeText(l).then(()=>ss('Đã chép link cho học sinh 🔗'),()=>prompt('Sao chép link:',l))};
+setInterval(()=>{if(!$('#t4').hidden)pull()},20000);
+const GS=`const PASS='matkhau123'; // đổi mật khẩu này
+function doPost(e){
+ const o=JSON.parse(e.postData.contents),k=(o.name+'|'+o.cls).trim().toLowerCase(),
+ ss=SpreadsheetApp.getActiveSpreadsheet(),s=ss.getSheetByName('data')||ss.insertSheet('data'),
+ L=LockService.getScriptLock();L.waitLock(20000);
+ const v=s.getDataRange().getValues(),i=v.findIndex(x=>x[0]==k),
+ m=(a,b)=>b.map((x,j)=>x||(a&&a[j])||0);
+ if(i>=0){o.pre=m(JSON.parse(v[i][3]),o.pre);o.post=m(JSON.parse(v[i][4]),o.post)}
+ const row=[k,o.name,o.cls,JSON.stringify(o.pre),JSON.stringify(o.post),new Date()];
+ if(i>=0)s.getRange(i+1,1,1,6).setValues([row]);else s.appendRow(row);
+ L.releaseLock();return ContentService.createTextOutput('ok')}
+function doGet(e){
+ const J=x=>ContentService.createTextOutput(JSON.stringify(x)).setMimeType(ContentService.MimeType.JSON);
+ if(e.parameter.p!=PASS)return J({error:'pass'});
+ const s=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('data');
+ if(!s)return J([]);
+ return J(s.getDataRange().getValues().filter(x=>x[0]).map(x=>({name:x[1],cls:x[2],pre:JSON.parse(x[3]),post:JSON.parse(x[4])})))}`;
+$('#gs').textContent=GS;$('#gc').onclick=()=>navigator.clipboard.writeText(GS).then(()=>ss('Đã chép mã script 📋'),()=>prompt('Sao chép mã:',GS));
+survey();tab(0);
+</script></body></html>
