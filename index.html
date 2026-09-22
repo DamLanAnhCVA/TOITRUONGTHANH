@@ -246,35 +246,51 @@ const d2=db();delete d2[k];try{localStorage.ttt=JSON.stringify(d2)}catch(e){}
 if(CFG.ck){CFG.ck=CFG.ck.filter(z=>z!=k);scfg()}
 toast('Đã xóa học sinh ✅');cls()}
 async function pull(){if(!CFG.url||!CFG.pass){ss('Nhập link Web app và mật khẩu để nhận kết quả tự động.');return}
-try{const r=await fetch(CFG.url+(CFG.url.includes('?')?'&':'?')+'p='+encodeURIComponent(CFG.pass)),a=await r.json();if(!Array.isArray(a)){ss('⚠️ Sai mật khẩu');return}imp(a);const nk=a.filter(o=>o&&o.name).map(o=>((o.name||'')+'|'+(o.cls||'')).trim().toLowerCase()),gone=(CFG.ck||[]).filter(k=>!nk.includes(k));if(gone.length){const d=db();gone.forEach(k=>delete d[k]);try{localStorage.ttt=JSON.stringify(d)}catch(x){}}CFG.ck=nk;scfg();ss(`🟢 ${a.length} học sinh · cập nhật lúc ${new Date().toLocaleTimeString('vi-VN')}`+(gone.length?` · đã xóa ${gone.length} em không còn trên Sheet`:''));if(!$('#t4').hidden)cls()}catch(e){ss('⚠️ Không đọc được. Kiểm tra link /exec và quyền “Bất kỳ ai”.')}}
+let r;try{r=await fetch(CFG.url+(CFG.url.includes('?')?'&':'?')+'p='+encodeURIComponent(CFG.pass))}catch(e){ss('⚠️ Không kết nối được mạng, hoặc trình duyệt chặn yêu cầu. Kiểm tra kết nối mạng.');return}
+if(!r.ok){ss(r.status==404?'⚠️ Link /exec không tồn tại (đã bị xóa hoặc sai). Vào Apps Script → Triển khai → Quản lý các lượt triển khai để lấy lại link đúng, hoặc triển khai phiên bản mới.':`⚠️ Server báo lỗi (mã ${r.status}). Kiểm tra lại mã script.`);return}
+let a;try{a=await r.json()}catch(e){ss('⚠️ Server không trả về dữ liệu hợp lệ. Kiểm tra quyền truy cập là “Bất kỳ ai” và đã Triển khai phiên bản mới nhất sau khi sửa mã.');return}
+if(a&&a.error=='pass'){ss('⚠️ Sai mật khẩu.');return}
+if(a&&a.error){ss('⚠️ Lỗi trong mã script: '+(a.message||a.error));return}
+if(!Array.isArray(a)){ss('⚠️ Phản hồi không đúng định dạng. Kiểm tra lại mã script.');return}
+imp(a);const nk=a.filter(o=>o&&o.name).map(o=>((o.name||'')+'|'+(o.cls||'')).trim().toLowerCase()),gone=(CFG.ck||[]).filter(k=>!nk.includes(k));if(gone.length){const d=db();gone.forEach(k=>delete d[k]);try{localStorage.ttt=JSON.stringify(d)}catch(x){}}CFG.ck=nk;scfg();ss(`🟢 ${a.length} học sinh · cập nhật lúc ${new Date().toLocaleTimeString('vi-VN')}`+(gone.length?` · đã xóa ${gone.length} em không còn trên Sheet`:''));if(!$('#t4').hidden)cls()}
 $('#su').value=CFG.url||'';$('#sp').value=CFG.pass||'';if(CFG.url)syn('☁️ Kết quả sẽ tự động gửi cho giáo viên');
 $('#su').onchange=$('#sp').onchange=()=>{CFG.url=$('#su').value.trim();CFG.pass=$('#sp').value;scfg();pull()};
 $('#sk').onclick=pull;
 $('#sl').onclick=()=>{if(!CFG.url){ss('Nhập link Web app trước.');return}if(location.protocol=='file:'){ss('Hãy đưa file lên mạng (bước 3), mở link online rồi bấm lại nút này.');return}const l=location.href.split(/[?#]/)[0]+'?s='+encodeURIComponent(CFG.url);navigator.clipboard.writeText(l).then(()=>ss('Đã chép link cho học sinh 🔗'),()=>prompt('Sao chép link:',l))};
 setInterval(()=>{if(!$('#t4').hidden)pull()},20000);
 const GS=`const PASS='matkhau123'; // đổi mật khẩu này
+const SP=s=>{try{const v=JSON.parse(s);return Array.isArray(v)?v:[]}catch(e){return[]}};
 function doPost(e){
- const o=JSON.parse(e.postData.contents),k=(o.name+'|'+o.cls).trim().toLowerCase(),
- ss=SpreadsheetApp.getActiveSpreadsheet(),s=ss.getSheetByName('data')||ss.insertSheet('data'),
- L=LockService.getScriptLock();L.waitLock(20000);
- const v=s.getDataRange().getValues(),i=v.findIndex(x=>x[0]==k),
- m=(a,b)=>b.map((x,j)=>x||(a&&a[j])||0);
- if(i>=0){o.pre=m(JSON.parse(v[i][3]),o.pre);o.post=m(JSON.parse(v[i][4]),o.post)}
- const row=[k,o.name,o.cls,JSON.stringify(o.pre),JSON.stringify(o.post),new Date()];
- if(i>=0)s.getRange(i+1,1,1,6).setValues([row]);else s.appendRow(row);
- L.releaseLock();return ContentService.createTextOutput('ok')}
+ try{
+  const o=JSON.parse(e.postData.contents);
+  if(!o||!o.name)return ContentService.createTextOutput('bad request');
+  const k=(o.name+'|'+(o.cls||'')).trim().toLowerCase(),
+  ss=SpreadsheetApp.getActiveSpreadsheet(),s=ss.getSheetByName('data')||ss.insertSheet('data'),
+  L=LockService.getScriptLock();L.waitLock(20000);
+  try{
+   const v=s.getDataRange().getValues(),i=v.findIndex(x=>x[0]==k),
+   m=(a,b)=>(b||[]).map((x,j)=>x||(a&&a[j])||0);
+   let pre=Array.isArray(o.pre)?o.pre:[],post=Array.isArray(o.post)?o.post:[];
+   if(i>=0){pre=m(SP(v[i][3]),pre);post=m(SP(v[i][4]),post)}
+   const row=[k,o.name,o.cls||'',JSON.stringify(pre),JSON.stringify(post),new Date()];
+   if(i>=0)s.getRange(i+1,1,1,6).setValues([row]);else s.appendRow(row);
+  }finally{L.releaseLock()}
+  return ContentService.createTextOutput('ok');
+ }catch(err){return ContentService.createTextOutput('error: '+err.message)}}
 function doGet(e){
  const J=x=>ContentService.createTextOutput(JSON.stringify(x)).setMimeType(ContentService.MimeType.JSON);
- if(e.parameter.p!=PASS)return J({error:'pass'});
- const s=SpreadsheetApp.getActiveSpreadsheet().getSheetByName('data');
- if(e.parameter.del){
-  if(s){const L=LockService.getScriptLock();L.waitLock(20000);
-   const v=s.getDataRange().getValues();
-   for(let i=v.length-1;i>=0;i--)if(v[i][0]==e.parameter.del)s.deleteRow(i+1);
-   L.releaseLock()}
-  return J({ok:true})}
- if(!s)return J([]);
- return J(s.getDataRange().getValues().filter(x=>x[0]).map(x=>({name:x[1],cls:x[2],pre:JSON.parse(x[3]),post:JSON.parse(x[4])})))}`;
+ try{
+  if(e.parameter.p!=PASS)return J({error:'pass'});
+  const ss=SpreadsheetApp.getActiveSpreadsheet(),s=ss.getSheetByName('data');
+  if(e.parameter.del){
+   if(s){const L=LockService.getScriptLock();L.waitLock(20000);
+    try{const v=s.getDataRange().getValues();
+     for(let i=v.length-1;i>=0;i--)if(v[i][0]==e.parameter.del)s.deleteRow(i+1);
+    }finally{L.releaseLock()}}
+   return J({ok:true})}
+  if(!s)return J([]);
+  return J(s.getDataRange().getValues().filter(x=>x[0]).map(x=>({name:x[1],cls:x[2],pre:SP(x[3]),post:SP(x[4])})));
+ }catch(err){return J({error:'server',message:String(err)})}}`;
 $('#gs').textContent=GS;$('#gc').onclick=()=>navigator.clipboard.writeText(GS).then(()=>ss('Đã chép mã script 📋'),()=>prompt('Sao chép mã:',GS));
 survey();tab(0);
 </script></body></html>
