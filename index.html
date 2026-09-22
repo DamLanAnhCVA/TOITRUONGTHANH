@@ -2,6 +2,7 @@
 <html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tôi trưởng thành – Khảo sát trước/sau</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root{--i:#1e293b;--m:#64748b;--main:#0d9488}
 *{box-sizing:border-box;margin:0}
@@ -85,8 +86,8 @@ canvas{width:100%;max-width:420px;display:block;margin:auto}
 <button class="pb" id="ba">✨ Nhận gợi ý rèn luyện</button>
 <div class="ao" id="ao"></div></div>
 <div class="card"><h2>📤 Xuất & lưu kết quả</h2>
-<div class="g"><button class="pb" id="bp">📄 Xuất PDF</button><button class="pb" id="bw">📝 Xuất Word</button><button class="sb" id="bc">📋 Sao chép mã</button><button class="sb" id="bi">📥 Dán mã</button></div>
-<p class="hint">PDF: chọn “Lưu thành PDF” ở hộp thoại in (nếu trình duyệt trong app không in được, hãy mở bằng Chrome/Safari hoặc dùng Word). “Mã” giúp mang kết quả trước-học sang thiết bị khác để làm bài sau-học.</p></div>
+<div class="g"><button class="pb" id="bdl">⬇️ Tải file PDF</button><button class="pb" id="bp">🖨️ In / Lưu PDF</button><button class="pb" id="bw">📝 Xuất Word</button><button class="sb" id="bc">📋 Sao chép mã</button><button class="sb" id="bi">📥 Dán mã</button></div>
+<p class="hint">"Tải file PDF" tải trực tiếp về máy, không cần hộp thoại in. "In / Lưu PDF" dùng hộp thoại in của trình duyệt nếu cần tùy chỉnh thêm. "Mã" giúp mang kết quả trước-học sang thiết bị khác để làm bài sau-học.</p></div>
 </section>
 </div>
 <div class="w tp" id="t4" hidden>
@@ -108,7 +109,7 @@ canvas{width:100%;max-width:420px;display:block;margin:auto}
 <div id="cr"></div>
 <div class="card"><h2>✨ AI & xuất báo cáo lớp</h2><p class="hint">AI chỉ nhận số liệu tổng hợp, không nhận tên học sinh. Dùng API key đã kiểm tra ở tab “AI & Xuất”.</p>
 <button class="pb" id="ca">✨ AI phân tích cả lớp</button><div class="ao" id="cao"></div>
-<div class="g"><button class="pb" id="cp">📄 PDF lớp</button><button class="pb" id="cw">📝 Word lớp</button><button class="sb" id="cv2">📊 CSV (Excel)</button><button class="sb" id="cj">💾 Lưu file .json</button></div></div></div>
+<div class="g"><button class="pb" id="cdl">⬇️ Tải PDF lớp</button><button class="pb" id="cp">🖨️ In lớp</button><button class="pb" id="cw">📝 Word lớp</button><button class="sb" id="cv2">📊 CSV (Excel)</button><button class="sb" id="cj">💾 Lưu file .json</button></div></div></div>
 <nav class="tabs"><button onclick="tab(0)">📝<br>Khảo sát</button><button onclick="tab(1)">📐<br>Rubric</button><button onclick="tab(2)">📊<br>Kết quả</button><button onclick="tab(3)">✨<br>AI & Xuất</button><button onclick="tab(4)">👥<br>Cả lớp</button></nav>
 <div id="ts"></div><div id="rp"></div>
 <script>
@@ -169,6 +170,15 @@ $('#t2').innerHTML=`<div class="card"><h2>🕸️ Radar 4 mặt trưởng thành
 function rep(w){const [p,q]=P(),c=document.createElement('canvas');c.width=c.height=800;radar(c,p,q);
 return `<h2 style="color:#0d9488">Phiếu khảo sát tự đánh giá – Chủ đề 2: Tôi trưởng thành</h2><p><b>Học sinh:</b> ${esc(D.name)} &nbsp; <b>Lớp:</b> ${esc(D.cls)} &nbsp; <b>Ngày:</b> ${new Date().toLocaleDateString('vi-VN')}</p>${tbl(1)}${w?'':`<p style="text-align:center"><img src="${c.toDataURL()}" width="360"></p>`}<h3>Gợi ý rèn luyện</h3>${D.ai?md(D.ai):tips()}<p style="font-size:11px;color:#64748b">Thang điểm 1–4: Mức 1 &lt; 1,75 · Mức 2 &lt; 2,5 · Mức 3 &lt; 3,25 · Mức 4 ≥ 3,25. Mức 3–4: Đạt.</p>`}
 const ok=()=>{if(P().flat().some(x=>x!=null))return 1;toast('Chưa có dữ liệu khảo sát');return 0};
+async function savePdf(html,name,fallback){
+if(typeof html2pdf!=='function'){toast('Không tải được công cụ PDF (cần Internet). Dùng nút "In / Lưu PDF" thay thế…');fallback();return}
+const el=document.createElement('div');
+el.style.cssText='position:fixed;left:-9999px;top:0;width:740px;background:#fff;color:#1e293b;padding:16px;font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+el.innerHTML=html;document.body.appendChild(el);
+try{await html2pdf().set({margin:6,filename:name,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}}).from(el).save();toast('Đã tải PDF ✅')}
+catch(e){toast('Lỗi tạo PDF: '+e.message)}
+finally{document.body.removeChild(el)}}
+$('#bdl').onclick=async()=>{if(!ok())return;toast('⏳ Đang tạo PDF…');await savePdf(rep(0),'Toi_truong_thanh_'+(D.name||'HS').trim().replace(/\s+/g,'_')+'.pdf',()=>{$('#rp').innerHTML=rep(0);setTimeout(()=>print(),200)})};
 $('#bp').onclick=()=>{if(!ok())return;$('#rp').innerHTML=rep(0);setTimeout(()=>print(),200)};
 $('#bw').onclick=()=>{if(!ok())return;const h=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Khảo sát</title></head><body style="font-family:Calibri">${rep(1)}</body></html>`,a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+h],{type:'application/msword'}));a.download='Toi_truong_thanh_'+(D.name||'HS').trim().replace(/\s+/g,'_')+'.doc';a.click()};
 $('#bc').onclick=()=>{const c=btoa(unescape(encodeURIComponent(JSON.stringify(D))));navigator.clipboard.writeText(c).then(()=>toast('Đã sao chép mã 📋'),()=>prompt('Sao chép mã:',c))};
@@ -232,6 +242,7 @@ const cok=()=>{if(cd().R.length)return 1;toast('Chưa có dữ liệu lớp');re
 $('#cn').onclick=()=>{const a=[];$('#cx').value.split(/\s+/).filter(Boolean).forEach(c=>{try{a.push(JSON.parse(decodeURIComponent(escape(atob(c)))))}catch(e){}});const n=imp(a);$('#cx').value='';toast(n?`Đã nạp ${n} học sinh ✅`:'Không đọc được mã nào');cls()};
 $('#cf').onchange=e=>{const fl=e.target.files[0];if(!fl)return;fl.text().then(t=>{try{const a=JSON.parse(t);toast(`Đã nạp ${imp(Array.isArray(a)?a:[a])} học sinh ✅`);cls()}catch(x){toast('File không hợp lệ')}});e.target.value=''};
 $('#cj').onclick=()=>{if(cok())dl(JSON.stringify(cd().R),'Ket_qua_ca_lop.json','application/json')};
+$('#cdl').onclick=async()=>{if(!cok())return;toast('⏳ Đang tạo PDF…');await savePdf(crep(0),'Bao_cao_ca_lop.pdf',()=>{$('#rp').innerHTML=crep(0);setTimeout(()=>print(),200)})};
 $('#cp').onclick=()=>{if(!cok())return;$('#rp').innerHTML=crep(0);setTimeout(()=>print(),200)};
 $('#cw').onclick=()=>{if(cok())dl('\ufeff<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Báo cáo lớp</title></head><body style="font-family:Calibri">'+crep(1)+'</body></html>','Bao_cao_ca_lop.doc','application/msword')};
 $('#cv2').onclick=()=>{if(!cok())return;const d=cd(),T=['Trước','Sau'],h=['Họ tên','Lớp',...T.flatMap(t=>A.map(a=>t+' – '+a.n)),'TB trước','TB sau','Thay đổi','Mức',...T.flatMap(t=>Array.from({length:16},(_,i)=>t+' C'+(i+1)))],
