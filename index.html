@@ -78,8 +78,8 @@ canvas{width:100%;max-width:420px;display:block;margin:auto}
 <section class="tp" id="t2" hidden></section>
 <section class="tp" id="t3" hidden>
 <div class="card"><h2>✨ Gợi ý từ AI</h2>
-<p class="hint">Dán API key Gemini (AIza…), Claude (sk-ant…) hoặc OpenAI (sk-…). Key chỉ nằm trong trình duyệt này và gửi thẳng tới nhà cung cấp, không được lưu lại.</p>
-<input id="ky" type="password" placeholder="Dán API key" autocomplete="off">
+<p class="hint">Dán API key Gemini (bắt đầu bằng AIza…) — lấy miễn phí tại <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Key chỉ nằm trong trình duyệt này và gửi thẳng tới Google, không được lưu lại.</p>
+<input id="ky" type="password" placeholder="Dán API key Gemini (AIza…)" autocomplete="off">
 <button class="pb" id="bt">🔍 Kiểm tra key & tự chọn model</button>
 <div id="st"></div><select id="md" hidden></select>
 <button class="pb" id="ba">✨ Nhận gợi ý rèn luyện</button>
@@ -173,15 +173,12 @@ $('#bp').onclick=()=>{if(!ok())return;$('#rp').innerHTML=rep(0);setTimeout(()=>p
 $('#bw').onclick=()=>{if(!ok())return;const h=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Khảo sát</title></head><body style="font-family:Calibri">${rep(1)}</body></html>`,a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+h],{type:'application/msword'}));a.download='Toi_truong_thanh_'+(D.name||'HS').trim().replace(/\s+/g,'_')+'.doc';a.click()};
 $('#bc').onclick=()=>{const c=btoa(unescape(encodeURIComponent(JSON.stringify(D))));navigator.clipboard.writeText(c).then(()=>toast('Đã sao chép mã 📋'),()=>prompt('Sao chép mã:',c))};
 $('#bi').onclick=()=>{const c=prompt('Dán mã dữ liệu:');if(!c)return;try{Object.assign(D,JSON.parse(decodeURIComponent(escape(atob(c.trim())))));$('#nm').value=D.name;$('#cl').value=D.cls;save();survey();showAI();toast('Đã nạp dữ liệu ✅')}catch(e){toast('Mã không hợp lệ')}};
-const MD={gemini:['gemini-2.5-flash','gemini-2.0-flash','gemini-2.5-flash-lite','gemini-1.5-flash'],claude:['claude-haiku-4-5-20251001','claude-sonnet-5'],openai:['gpt-4o-mini','gpt-4.1-mini','gpt-4o']};
-const prov=k=>k.startsWith('sk-ant')?'claude':k.startsWith('AIza')?'gemini':k.startsWith('sk-')?'openai':'';
-async function ask(pv,k,m,t,n){let r,j,H={'content-type':'application/json'};
-if(pv=='gemini')r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${k}`,{method:'POST',headers:H,body:JSON.stringify({contents:[{parts:[{text:t}]}],generationConfig:{maxOutputTokens:n}})});
-else if(pv=='claude')r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{...H,'x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:m,max_tokens:n,messages:[{role:'user',content:t}]})});
-else r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{...H,Authorization:'Bearer '+k},body:JSON.stringify({model:m,max_completion_tokens:n,messages:[{role:'user',content:t}]})});
-j=await r.json();if(!r.ok)throw Error(j.error?.message||r.status);
-return pv=='gemini'?(j.candidates?.[0]?.content?.parts||[]).map(x=>x.text).join(''):pv=='claude'?j.content.map(x=>x.text||'').join(''):j.choices[0].message.content}
-$('#bt').onclick=async()=>{const k=$('#ky').value.trim(),pv=prov(k);if(!pv){$('#st').textContent='⚠️ Không nhận ra key. Key hợp lệ bắt đầu bằng AIza, sk-ant hoặc sk-.';return}
+const MD={gemini:['gemini-3.1-flash-lite','gemini-2.5-flash','gemini-2.5-flash-lite','gemini-3-flash-preview','gemini-3.5-flash']};
+const prov=k=>k.startsWith('AIza')?'gemini':'';
+async function ask(pv,k,m,t,n){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${k}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:t}]}],generationConfig:{maxOutputTokens:n}})});
+const j=await r.json();if(!r.ok)throw Error(j.error?.message||r.status);
+return (j.candidates?.[0]?.content?.parts||[]).map(x=>x.text).join('')}
+$('#bt').onclick=async()=>{const k=$('#ky').value.trim(),pv=prov(k);if(!pv){$('#st').textContent='⚠️ Không nhận ra key. Key Gemini hợp lệ bắt đầu bằng AIza (lấy tại aistudio.google.com/apikey).';return}
 $('#st').textContent='⏳ Đang thử '+MD[pv].length+' model…';
 const rs=await Promise.all(MD[pv].map(m=>ask(pv,k,m,'Trả lời: OK',20).then(()=>[m,1],e=>[m,0,e.message])));
 $('#st').innerHTML=rs.map(r=>r[1]?`✅ ${r[0]}`:`❌ ${r[0]} <small>${esc(r[2]).slice(0,80)}</small>`).join('<br>');
@@ -206,7 +203,8 @@ return{all,R,cur,p:M('pre'),q:M('post'),dist,dat,S}}
 const TA=w=>w?'border="1" cellpadding="6" style="border-collapse:collapse;width:100%;text-align:center"':'class="tb"';
 const atbl=(w,d)=>`<table ${TA(w)}><tr><th>Khía cạnh</th><th>TB trước</th><th>TB sau</th><th>Thay đổi</th><th>Đạt trước → sau</th></tr>`+A.map((a,i)=>`<tr><td>${a.e} ${a.n}</td><td>${f(d.p[i])}</td><td>${f(d.q[i])}</td><td>${d.p[i]!=null&&d.q[i]!=null?sg(d.q[i]-d.p[i]):'–'}</td><td>${pc(d.dat(d.dist('pre',i)))} → ${pc(d.dat(d.dist('post',i)))}</td></tr>`).join('')+'</table>';
 const stbl=(w,d)=>`<table ${TA(w)}><tr><th>Họ tên</th><th>Lớp</th><th>Trước</th><th>Sau</th><th>Thay đổi</th><th>Mức</th>${w?'':'<th></th>'}</tr>`+d.S.slice().sort((x,y)=>(y.d??-9)-(x.d??-9)).map(x=>`<tr><td>${esc(x.r.name)}</td><td>${esc(x.r.cls)}</td><td>${f(x.a)}</td><td>${f(x.b)}</td><td>${sg(x.d)}</td><td>${ln(x.b??x.a)}</td>${w?'':`<td><button class="xhs" title="Xóa học sinh này" data-k="${encodeURIComponent(((x.r.name||'')+'|'+(x.r.cls||'')).trim().toLowerCase())}" onclick="xoaHS(decodeURIComponent(this.dataset.k))" style="border:0;background:#fee2e2;color:#b91c1c;border-radius:8px;padding:4px 8px;cursor:pointer">🗑️</button></td>`}</tr>`).join('')+'</table>';
-function cls(){const d=cd(),cs=[...new Set(d.all.map(r=>(r.cls||'').trim()))].sort();
+function cls(){try{
+const d=cd(),cs=[...new Set(d.all.map(r=>(r.cls||'').trim()))].sort();
 $('#cs').innerHTML='<option value="">Tất cả các lớp</option>'+cs.map(c=>`<option${c==d.cur?' selected':''}>${esc(c)}</option>`).join('');
 if(!d.R.length){$('#cr').innerHTML='<div class="card">Chưa có dữ liệu. Nạp mã của học sinh ở trên, hoặc cho học sinh làm khảo sát trên máy này 👥</div>';return}
 const {p,q,S,R}=d,pd=S.filter(x=>x.d!=null),up=pd.filter(x=>x.d>.05).length,dn=pd.filter(x=>x.d<-.05).length,
@@ -218,7 +216,8 @@ $('#cr').innerHTML=`<div class="card"><h2>🎯 Tổng quan ${esc(d.cur||'các l�
 <div class="card"><h2>📊 Phân bố học sinh theo mức</h2><div class="lg">${L.map((l,k)=>`<span style="border-left:10px solid ${LC[k]}">Mức ${k+1} · ${l}</span>`).join('')}</div>${A.map((a,i)=>`<div class="br"><b>${a.e} ${a.n}</b> <span style="color:#64748b;font-size:.8rem">Đạt: ${pc(d.dat(d.dist('pre',i)))} → ${pc(d.dat(d.dist('post',i)))}</span><small>Trước</small>${st(d.dist('pre',i))}<small>Sau</small>${st(d.dist('post',i))}</div>`).join('')}<p class="hint">Số trong thanh = số học sinh ở mức đó.</p></div>
 <div class="card"><h2>📈 Điểm TB từng khía cạnh</h2>${A.map((a,i)=>`<div class="br"><b>${a.e} ${a.n}</b> <span style="color:#64748b;font-size:.8rem">${f(p[i])} → ${f(q[i])}</span><div class="tr"><i style="width:${(p[i]||0)*25}%;background:#a5b4fc"></i></div><div class="tr"><i style="width:${(q[i]||0)*25}%;background:${a.c}"></i></div></div>`).join('')}<div class="ov" style="margin-top:12px">${atbl(0,d)}</div>${g.length?`<p style="margin-top:10px">🏆 Tiến bộ nhất: <b>${g[0][1]}</b> (${sg(g[0][0])}) · 🔎 Cần củng cố: <b>${g[g.length-1][1]}</b> (${sg(g[g.length-1][0])})</p>`:''}</div>
 <div class="card"><h2>👩‍🎓 Danh sách học sinh</h2><div class="ov">${stbl(0,d)}</div></div>`;
-radar($('#cc'),p,q)}
+try{radar($('#cc'),p,q)}catch(re){}
+}catch(err){try{$('#cr').innerHTML=`<div class="card">⚠️ Có lỗi khi hiển thị thống kê lớp: <code>${esc(err.message)}</code>. Thử bấm lại "🔄 Cập nhật ngay"; nếu vẫn vậy, chụp màn hình dòng lỗi này gửi lại để kiểm tra tiếp.</div>`}catch(e2){}}}
 function crep(w){const d=cd(),c=document.createElement('canvas');c.width=c.height=800;radar(c,d.p,d.q);
 return `<h2 style="color:#0d9488">Báo cáo khảo sát cả lớp – Chủ đề 2: Tôi trưởng thành</h2><p><b>Lớp:</b> ${esc(d.cur||'Tất cả')} &nbsp; <b>Số học sinh:</b> ${d.R.length} &nbsp; <b>Ngày:</b> ${new Date().toLocaleDateString('vi-VN')}</p>${atbl(1,d)}${w?'':`<p style="text-align:center"><img src="${c.toDataURL()}" width="360"></p>`}${CAI?`<h3>Phân tích & gợi ý</h3>${md(CAI)}`:''}<h3>Danh sách học sinh</h3>${stbl(1,d)}`}
 const cok=()=>{if(cd().R.length)return 1;toast('Chưa có dữ liệu lớp');return 0};
