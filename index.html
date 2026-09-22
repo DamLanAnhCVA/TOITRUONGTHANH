@@ -150,7 +150,7 @@ $$('.seg button').forEach(b=>b.onclick=()=>{ph=b.dataset.p;$$('.seg button').for
 $('#nm').oninput=$('#cl').oninput=()=>{D.name=$('#nm').value;D.cls=$('#cl').value};
 $('#nm').onchange=$('#cl').onchange=()=>{load();survey();showAI()};
 function showAI(){$('#ao').innerHTML=D.ai?md(D.ai):''}
-function tab(n){$$('.tp').forEach((e,i)=>e.hidden=i!=n);$$('.tabs button').forEach((b,i)=>b.classList.toggle('on',i==n));if(n==1)rub();if(n==2)res();if(n==4){cls();pull()}scrollTo(0,0)}
+function tab(n){if(typeof STU!='undefined'&&STU&&(n==1||n==4))n=0;$$('.tp').forEach((e,i)=>e.hidden=i!=n);$$('.tabs button').forEach((b,i)=>b.classList.toggle('on',i==n));if(n==1)rub();if(n==2)res();if(n==4){cls();pull()}scrollTo(0,0)}
 function rub(){const [p,q]=P(),l=q.some(x=>x!=null)?q:p;
 $('#t1').innerHTML=`<div class="card"><h2>📐 Rubric 4 mức</h2><p class="hint">Điểm trung bình mỗi mặt (thang 1–4): Mức 1 &lt; 1,75 · Mức 2: 1,75–2,49 · Mức 3: 2,5–3,24 · Mức 4 ≥ 3,25. Mức 3–4 tương ứng “Đạt”, Mức 1–2 tương ứng “Chưa đạt” ở phần đánh giá cuối chủ đề. Dấu ⭐ là mức hiện tại của em.</p></div>`+A.map((a,i)=>`<div class="card" style="--c:${a.c}"><h2>${a.e} ${a.n}</h2>${a.r.map((t,k)=>`<div class="lv${lv(l[i])==k?' me':''}"><b style="background:${LC[k]}">Mức ${k+1}<br><small>${L[k]}</small></b><span>${t}</span></div>`).join('')}</div>`).join('')}
 function tbl(w){const [p,q]=P();return `<table ${w?'border="1" cellpadding="6" style="border-collapse:collapse;width:100%;text-align:center"':'class="tb"'}><tr><th>Khía cạnh</th><th>Trước</th><th>Sau</th><th>Thay đổi</th><th>Mức hiện tại</th></tr>`+A.map((a,i)=>`<tr><td>${a.e} ${a.n}</td><td>${f(p[i])}</td><td>${f(q[i])}</td><td>${p[i]!=null&&q[i]!=null?sg(q[i]-p[i]):'–'}</td><td>${ln(q[i]??p[i])}</td></tr>`).join('')+(t=>`<tr><td><b>Tổng</b></td><td><b>${f(tot(p))}</b></td><td><b>${f(tot(q))}</b></td><td>${tot(p)!=null&&tot(q)!=null?sg(tot(q)-tot(p)):'–'}</td><td>${ln(tot(q)??tot(p))}</td></tr>`)()+'</table>'}
@@ -235,7 +235,9 @@ const d=cd(),t=`Bạn là chuyên gia giáo dục, hỗ trợ giáo viên chủ 
 $('#cao').textContent='⏳ AI đang phân tích…';try{CAI=await ask(AI.pv,AI.k,$('#md').value,t,3500);$('#cao').innerHTML=md(CAI)}catch(e){$('#cao').textContent='❌ Lỗi: '+e.message}};
 let CFG={};try{CFG=JSON.parse(localStorage.tttcfg||'{}')}catch(e){}
 const scfg=()=>{try{localStorage.tttcfg=JSON.stringify(CFG)}catch(e){}};
-const qs=new URLSearchParams(location.search).get('s');if(qs){CFG.url=qs;scfg()}
+const qs=new URLSearchParams(location.search).get('s');if(qs){CFG.url=qs;CFG.stu=true;scfg()}
+const STU=!!CFG.stu;
+if(STU){const nb=$$('.tabs button');if(nb[1])nb[1].hidden=true;if(nb[4])nb[4].hidden=true}
 const syn=t=>$('#sy').textContent=t,ss=t=>$('#ss').textContent=t;
 let PT;function push(){if(!CFG.url)return;clearTimeout(PT);syn('⏳ Đang gửi cho giáo viên…');PT=setTimeout(()=>{fetch(CFG.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({name:D.name,cls:D.cls,pre:D.pre,post:D.post})}).then(()=>syn('☁️ Đã gửi kết quả cho giáo viên'),()=>syn('⚠️ Chưa gửi được – kiểm tra mạng rồi chọn lại một đáp án'))},1200)}
 async function xoaHS(k){const d=db(),r=d[k];if(!r)return;const cl=CFG.url&&CFG.pass;
