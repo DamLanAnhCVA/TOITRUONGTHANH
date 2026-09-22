@@ -174,13 +174,21 @@ $('#bw').onclick=()=>{if(!ok())return;const h=`<html xmlns:o="urn:schemas-micros
 $('#bc').onclick=()=>{const c=btoa(unescape(encodeURIComponent(JSON.stringify(D))));navigator.clipboard.writeText(c).then(()=>toast('Đã sao chép mã 📋'),()=>prompt('Sao chép mã:',c))};
 $('#bi').onclick=()=>{const c=prompt('Dán mã dữ liệu:');if(!c)return;try{Object.assign(D,JSON.parse(decodeURIComponent(escape(atob(c.trim())))));$('#nm').value=D.name;$('#cl').value=D.cls;save();survey();showAI();toast('Đã nạp dữ liệu ✅')}catch(e){toast('Mã không hợp lệ')}};
 const MD={gemini:['gemini-3.1-flash-lite','gemini-2.5-flash','gemini-2.5-flash-lite','gemini-3-flash-preview','gemini-3.5-flash']};
-const prov=k=>k.startsWith('AIza')?'gemini':'';
-async function ask(pv,k,m,t,n){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${k}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:t}]}],generationConfig:{maxOutputTokens:n}})});
-const j=await r.json();if(!r.ok)throw Error(j.error?.message||r.status);
+const cleanKey=k=>String(k||'').replace(/[\s\u00A0\u200B-\u200D\uFEFF]+/g,'').replace(/^['"]+|['"]+$/g,'');
+const prov=k=>/^[A-Za-z0-9_-]{25,60}$/.test(k)?'gemini':'';
+async function ask(pv,k,m,t,n){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(k)}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:t}]}],generationConfig:{maxOutputTokens:n}})});
+const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error?.message||('HTTP '+r.status));
 return (j.candidates?.[0]?.content?.parts||[]).map(x=>x.text).join('')}
-$('#bt').onclick=async()=>{const k=$('#ky').value.trim(),pv=prov(k);if(!pv){$('#st').textContent='⚠️ Không nhận ra key. Key Gemini hợp lệ bắt đầu bằng AIza (lấy tại aistudio.google.com/apikey).';return}
-$('#st').textContent='⏳ Đang thử '+MD[pv].length+' model…';
-const rs=await Promise.all(MD[pv].map(m=>ask(pv,k,m,'Trả lời: OK',20).then(()=>[m,1],e=>[m,0,e.message])));
+$('#ky').addEventListener('paste',()=>setTimeout(()=>{$('#ky').value=cleanKey($('#ky').value)},0));
+$('#bt').onclick=async()=>{const raw=$('#ky').value,k=cleanKey(raw);
+if(!k){$('#st').textContent='⚠️ Ô nhập key đang trống. Hãy dán key vào ô rồi bấm lại.';return}
+$('#ky').value=k;
+const pv=prov(k)||'gemini';
+if(!/^AIza/i.test(k)){$('#st').innerHTML=`⚠️ Key có vẻ không đúng định dạng chuẩn của Google (thường bắt đầu bằng <b>AIzaSy…</b>, dài ~39 ký tự). Đã nhận ${k.length} ký tự, bắt đầu bằng "${esc(k.slice(0,4))}". Vẫn đang thử gọi API bên dưới — nếu lỗi, hãy kiểm tra lại đã copy đủ/đúng key chưa (không kèm khoảng trắng, dấu ngoặc kép, hay chữ "key:").`;}
+else{$('#st').textContent='⏳ Đang thử '+MD[pv].length+' model…';}
+let rs;
+try{rs=await Promise.all(MD[pv].map(m=>ask(pv,k,m,'Trả lời: OK',20).then(()=>[m,1],e=>[m,0,e.message])))}
+catch(e){$('#st').textContent='❌ Không gọi được mạng tới Google: '+e.message+' (kiểm tra kết nối Internet hoặc mạng trường có chặn generativelanguage.googleapis.com không).';return}
 $('#st').innerHTML=rs.map(r=>r[1]?`✅ ${r[0]}`:`❌ ${r[0]} <small>${esc(r[2]).slice(0,80)}</small>`).join('<br>');
 const g=rs.filter(r=>r[1]).map(r=>r[0]),s=$('#md');s.innerHTML=g.map(m=>`<option>${m}</option>`).join('');s.hidden=!g.length;AI={k,pv};if(g.length)toast('Đã chọn model: '+g[0])};
 $('#ba').onclick=async()=>{if(!ok())return;if(!AI.k||$('#md').hidden){toast('Hãy kiểm tra key trước');return}
