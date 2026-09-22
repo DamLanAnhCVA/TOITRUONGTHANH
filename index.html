@@ -172,12 +172,18 @@ return `<h2 style="color:#0d9488">Phiếu khảo sát tự đánh giá – Chủ
 const ok=()=>{if(P().flat().some(x=>x!=null))return 1;toast('Chưa có dữ liệu khảo sát');return 0};
 async function savePdf(html,name,fallback){
 if(typeof html2pdf!=='function'){toast('Không tải được công cụ PDF (cần Internet). Dùng nút "In / Lưu PDF" thay thế…');fallback();return}
+const wrap=document.createElement('div');
+wrap.style.cssText='position:fixed;inset:0;z-index:999999;background:#fff;overflow:auto;display:flex;justify-content:center';
 const el=document.createElement('div');
-el.style.cssText='position:fixed;left:-9999px;top:0;width:740px;background:#fff;color:#1e293b;padding:16px;font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
-el.innerHTML=html;document.body.appendChild(el);
-try{await html2pdf().set({margin:6,filename:name,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}}).from(el).save();toast('Đã tải PDF ✅')}
+el.style.cssText='width:740px;max-width:100%;background:#fff;color:#1e293b;padding:16px;font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+el.innerHTML=html;wrap.appendChild(el);document.body.appendChild(wrap);
+try{
+await Promise.all([...el.querySelectorAll('img')].map(im=>im.complete?0:new Promise(rs=>{im.onload=im.onerror=rs})));
+await new Promise(rs=>requestAnimationFrame(()=>requestAnimationFrame(rs)));
+await html2pdf().set({margin:6,filename:name,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}}).from(el).save();
+toast('Đã tải PDF ✅')}
 catch(e){toast('Lỗi tạo PDF: '+e.message)}
-finally{document.body.removeChild(el)}}
+finally{document.body.removeChild(wrap)}}
 $('#bdl').onclick=async()=>{if(!ok())return;toast('⏳ Đang tạo PDF…');await savePdf(rep(0),'Toi_truong_thanh_'+(D.name||'HS').trim().replace(/\s+/g,'_')+'.pdf',()=>{$('#rp').innerHTML=rep(0);setTimeout(()=>print(),200)})};
 $('#bp').onclick=()=>{if(!ok())return;$('#rp').innerHTML=rep(0);setTimeout(()=>print(),200)};
 $('#bw').onclick=()=>{if(!ok())return;const h=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Khảo sát</title></head><body style="font-family:Calibri">${rep(1)}</body></html>`,a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+h],{type:'application/msword'}));a.download='Toi_truong_thanh_'+(D.name||'HS').trim().replace(/\s+/g,'_')+'.doc';a.click()};
